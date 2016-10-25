@@ -6,11 +6,11 @@
 using namespace std;
 class Shell
 {
-  public:
+public:
   Shell();
   void run();
   vector<string> parse();
 //  ~Shell();
-  private:
+private:
 };
 #endif

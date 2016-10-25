@@ -2,9 +2,9 @@
 #define ConfigManager_hh
 class ConfigManager
 {
-  public:
+public:
   ConfigManager();
   ~ConfigManager();
-  private:
+private:
 };
 #endif
