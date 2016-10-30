@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sstream>
 #include <string.h>
+#include <cstdlib>
 
 const int BUFFSIZE = 1024;
 
@@ -62,11 +63,8 @@ vector<char*> Shell::parse()
 		s.push_back(lineC);
 	}
 
+	cout << s.size() << endl;
 
-	// for(unsigned i =0; i < s.size(); i++)
-	// {
-	// 		cout << s.at(i) << endl;
-	// }
 
 	return s;
 }

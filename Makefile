@@ -3,6 +3,7 @@ CCFLAGS = -Wall  -std=c++11
 debug: CCFLAGS += -g
 debug: all
 all:main Shell Command
+	mkdir -p bin
 	$(CC) $(CCFLAGS) main.o Shell.o Command.o -o ./bin/rshell
 main:
 	$(CC) $(CCFLAGS) -c ./src/main.cpp

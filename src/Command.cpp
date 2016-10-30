@@ -15,24 +15,31 @@ bool Command::evaluate()
 {
   pid_t pid, wpid;
   int status;
+  //execvp needs a null terminated char **
+  cmd.push_back(NULL);
+  //using internal vector sturcture
   char** args = &cmd[0];
   pid = fork();
+
+
+
+
   if (pid == 0)
   {
-    cout << "Here" << endl;
     // Child process
-    if (execvp(args[0], args) == -1)
+    int res = execvp(args[0], args);
+    if (res == -1)
     {
-      cout << "Error executing" << endl;
+      perror("Exec failed");
 
     }
     exit(EXIT_FAILURE);
-    
+
   }
   else if (pid < 0)
   {
     // Error forking
-    cout <<"Error Forking" << endl;
+    perror("Forking Failed");
     return true;
   }
   else
