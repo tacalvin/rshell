@@ -9,4 +9,4 @@ main:
 Shell:
 	$(CC) $(CCFLAGS) -c ./src/Shell.cpp
 clean:
-	rm *.o ./src/
+	rm -r *.o
