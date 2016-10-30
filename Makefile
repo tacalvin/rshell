@@ -1,11 +1,12 @@
 CC = g++
-
+CCFLAGS = -Wall -Werror
+debug: CCFLAGS += -g
+debug: all
 all:main Shell
-	$(CC) main.o Shell.o -o ./bin/rshell
+	$(CC) $(CCFLAGS) main.o Shell.o -o ./bin/rshell
 main:
-	$(CC) -c ./src/main.cpp
+	$(CC) $(CCFLAGS) -c ./src/main.cpp
 Shell:
-	$(CC) -c ./src/Shell.cpp
+	$(CC) $(CCFLAGS) -c ./src/Shell.cpp
 clean:
 	rm *.o ./src/
-
