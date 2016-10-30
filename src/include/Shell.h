@@ -9,8 +9,8 @@ class Shell
 public:
   Shell();
   void run();
-  vector<string> parse();
-  Base* buildCommand();
+  vector<char*> parse();
+  Base* buildCommand(vector<char*> cmds);
 //  ~Shell();
 private:
 };

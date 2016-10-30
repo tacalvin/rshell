@@ -1,9 +1,11 @@
 #include "./include/Shell.h"
 #include "./include/Base.h"
+#include "./include/Command.h"
 #include <vector>
 #include <iostream>
 #include <unistd.h>
 #include <sstream>
+#include <string.h>
 
 const int BUFFSIZE = 1024;
 
@@ -15,6 +17,7 @@ Shell::Shell()
 
 void Shell::run()
 {
+	//getlogin does not work on windows bash atm
 	// char* uname = getlogin();
 	int status = 1;
 
@@ -22,22 +25,26 @@ void Shell::run()
 	{
 		// cout << uname << ">" << endl;
 		cout << "windows$" << endl;
-		vector<string> cmd = parse();
-		// Base* cmd = buildCommand(cmd);
-		// status = cmd.evaluate();
+		vector<char*> cmds = parse();
+		Base* cmd = buildCommand(cmds);
+		status = cmd->evaluate();
 	}
 }
 
-// Base* Shell::buildCommand(vector<string> cmd)
-// {
-//
-// }
-vector<string> Shell::parse()
+Base* Shell::buildCommand(vector<char*> args)
+{
+	return new Command(args);
+	// for(unsigned i = 0; i < cmd.size();i++)
+	// {
+	//
+	// }
+}
+vector<char*> Shell::parse()
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
 	//getline(line,BUFFSIZE);
-	vector<string> s;
+	vector<char*> s;
 
 	//get all input as a single line
 	string line;
@@ -45,8 +52,15 @@ vector<string> Shell::parse()
 
 	//split using string sstream
 	istringstream ss(line);
+	//since char** is needed converting const char* to char* via copying
 	while(getline(ss,line,' '))
-		s.push_back(line);
+	{
+		//create new char* of size line
+		char* lineC= new char(sizeof(line.c_str()));
+		strcpy(lineC,line.c_str());
+		s.push_back(lineC);
+	}
+
 
 	for(unsigned i =0; i < s.size(); i++)
 	{

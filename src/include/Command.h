@@ -7,10 +7,10 @@ using namespace std;
 class Command : public Base
 {
 public:
-  Command(string s);
+  Command(vector<char*> s);
   bool evaluate();
 private:
-  vector<string> cmd;
+  vector<char*> cmd;
 };
 
 #endif
