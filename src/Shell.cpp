@@ -27,7 +27,8 @@ void Shell::run()
 		cout << "windows$" << endl;
 		vector<char*> cmds = parse();
 		Base* cmd = buildCommand(cmds);
-		status = cmd->evaluate();
+		cmd->evaluate();
+		// cout <<"Status: "<< res << endl;
 	}
 }
 
@@ -62,10 +63,10 @@ vector<char*> Shell::parse()
 	}
 
 
-	for(unsigned i =0; i < s.size(); i++)
-	{
-			cout << s.at(i) << endl;
-	}
+	// for(unsigned i =0; i < s.size(); i++)
+	// {
+	// 		cout << s.at(i) << endl;
+	// }
 
 	return s;
 }
