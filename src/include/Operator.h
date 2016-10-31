@@ -1,10 +1,15 @@
 #ifndef Operator_hh
 #define Operator_hh
-class Operator
+#include "./Base.h"
+
+class Operator : public Base
 {
 public:
-  Operator();
+  Operator(Base* left, Base* right);
   ~Operator();
-private:
+  virtual bool evaluate() = 0;
+protected:
+  Base* right;
+  Base* left;
 };
 #endif

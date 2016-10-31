@@ -1,5 +1,10 @@
 #include "./include/Operator.h"
-Operator::Operator()
-{}
+
+Operator::Operator(Base* left, Base* right)
+{
+    this->left = left;
+    this->right = right;
+}
+
 Operator::~Operator()
 {}
