@@ -35,19 +35,24 @@ Shell::Shell()
 void Shell::run()
 {
 	//getlogin does not work on windows bash atm
-	// char* uname = getlogin();
+	char* uname = getlogin();
+	char hname[BUFFSIZE];
+	gethostname(hname,BUFFSIZE);
 	int status = 1;
 	//register signal handler
 	// signal(SIGINT,signalHandler);
 
 	while(status)
 	{
-		// cout << uname << ">" << endl;
-		cout << "windows$" << endl;
+
+		cout << uname << "@" << hname  << "$" << endl;
+		// cout << "windows$" << endl;
 		vector<char*> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
 		// cout <<"Status: "<< res << endl;
+		uname = getlogin();
+		gethostname(hname,BUFFSIZE);
 	}
 }
 
