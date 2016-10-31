@@ -7,20 +7,38 @@
 #include <sstream>
 #include <string.h>
 #include <cstdlib>
+#include <csignal>
 
 const int BUFFSIZE = 1024;
+const char* AND = "&&";
+const char* OR = "||";
+const char* SEMI = ";";
+const char* REDIRL = "<";
+const char* REDIRR = ">";
 
 
 Shell::Shell()
 {
-
+	//do configuration stuff here
 }
 
+// void Shell::signalHandler( int signum )
+// {
+//    cout << "Interrupt signal (" << signum << ") received.\n";
+//
+//    // cleanup and close up stuff here
+//    // terminate program
+//
+//    exit(signum);
+//
+// }
 void Shell::run()
 {
 	//getlogin does not work on windows bash atm
 	// char* uname = getlogin();
 	int status = 1;
+	//register signal handler
+	// signal(SIGINT,signalHandler);
 
 	while(status)
 	{
@@ -35,6 +53,7 @@ void Shell::run()
 
 Base* Shell::buildCommand(vector<char*> args)
 {
+	//build base tree
 	return new Command(args);
 	// for(unsigned i = 0; i < cmd.size();i++)
 	// {

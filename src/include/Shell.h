@@ -11,6 +11,7 @@ public:
   void run();
   vector<char*> parse();
   Base* buildCommand(vector<char*> cmds);
+  void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
 private:
 };
