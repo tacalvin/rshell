@@ -14,7 +14,7 @@ public:
   Shell();
   void run();
   stack<string> parse();
-  Base* buildCommand(stack<string> commandStack);
+  Base* buildCommand(stack<string>& commandStack);
   void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
 private:
