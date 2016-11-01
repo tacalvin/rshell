@@ -46,8 +46,8 @@ void Shell::run()
 	while(status)
 	{
 
-		//cout << uname << "@" << hname  << "$" << endl;
-		cout << "windows$" << endl;
+		cout << uname << "@" << hname  << "$" << endl;
+		
 		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
