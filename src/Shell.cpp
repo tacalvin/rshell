@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <csignal>
+#include <stdexcept>
 
 const int BUFFSIZE = 1024;
 const char* AND = "&&";
@@ -46,8 +47,8 @@ void Shell::run()
 	{
 
 		cout << uname << "@" << hname  << "$" << endl;
-		// cout << "windows$" << endl;
-		vector<char*> cmds = parse();
+		
+		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
 		// cout <<"Status: "<< res << endl;
@@ -56,39 +57,139 @@ void Shell::run()
 	}
 }
 
-Base* Shell::buildCommand(vector<char*> args)
+Base* Shell::buildCommand(stack<string>& commandStack)
 {
-	//build base tree
-	return new Command(args);
-	// for(unsigned i = 0; i < cmd.size();i++)
-	// {
-	//
-	// }
+	stack<Base*> treeStack;
+	while (!commandStack.empty())
+	{
+		string currString = commandStack.top();
+		commandStack.pop();
+		
+		if (currString == ";")
+		{
+			// Base* left = new Command(convertCharVector(commandStack.top()));
+			// commandStack.pop();
+			// Base* right = treeStack.top();
+			// treeStack.pop();
+			// treeStack.push(new SemiOperator(left, right));
+			Base* right = treeStack.top();
+			treeStack.pop();
+			Base* left = buildCommand(commandStack);
+			treeStack.push(new SemiOperator(left, right));
+		}
+		else if (currString == "&&")
+		{
+			Base* left = new Command(convertCharVector(commandStack.top()));
+			commandStack.pop();
+			Base* right = treeStack.top();
+			treeStack.pop();
+			treeStack.push(new AndOperator(left, right));
+		}
+		else if (currString == "||")
+		{
+			Base* left = new Command(convertCharVector(commandStack.top()));
+			commandStack.pop();
+			Base* right = treeStack.top();
+			treeStack.pop();
+			treeStack.push(new OrOperator(left, right));
+		}
+		else
+		{
+			treeStack.push(new Command(convertCharVector(currString)));
+		}
+	}
+	
+	if (treeStack.size() != 1) throw runtime_error("tempstack building didn't work.");
+	return treeStack.top();
 }
-vector<char*> Shell::parse()
+stack<string> Shell::parse()
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
 	//getline(line,BUFFSIZE);
-	vector<char*> s;
+	//vector<char*> s;
 
 	//get all input as a single line
 	string line;
 	getline(cin,line);
+	char currChar;
+	string delimiters = ";|&";
+	stack<string> commandStack;
 
-	//split using string sstream
 	istringstream ss(line);
+	
+	string command = "";
+	
+	// the purpose of this loop is the create a vector of strings of individual
+	// commands to parse seperately, operators are their own entries
+	while(ss.get(currChar)) 
+	{
+		size_t delimStatus = delimiters.find(currChar);
+		// if the current character is not a delimiter
+		if (delimStatus == string::npos)
+		{
+			// add the character as part of the command
+			command.push_back(currChar);
+		}
+		else
+		{
+			//if the current character is a delimiter candidate
+			if (currChar == ';') 
+			{
+				cleanPush(commandStack, command);
+				command = ";";
+				cleanPush(commandStack, command);
+				command = "";
+			}
+			else if (currChar == '&' && ss.peek() == '&')
+			{
+				cleanPush(commandStack, command);
+				command = "&&";
+				cleanPush(commandStack, command);
+				command = "";
+				// remove extra &
+				currChar = ss.get();
+			}
+			else if (currChar == '|' && ss.peek() == '|')
+			{
+				cleanPush(commandStack, command);
+				command = "||";
+				cleanPush(commandStack, command);
+				command = "";
+				currChar = ss.get();
+			}
+			else 
+			{
+				command.push_back(currChar);
+			}
+		}
+	}
+	cleanPush(commandStack, command);
+	//TODO: test case of what happens if there is a leading space
+
+
+	return commandStack;
+}
+
+void Shell::cleanPush(stack<string>& targetStack, string target)
+{
+    target.erase(0, target.find_first_not_of(' '));
+    target.erase(target.find_last_not_of(' ') + 1);
+	targetStack.push(target);
+}
+
+vector<char*> Shell::convertCharVector(string command) 
+{
+	vector<char*> s;
+	istringstream ss(command);
+	
 	//since char** is needed converting const char* to char* via copying
-	while(getline(ss,line,' '))
+	while(getline(ss,command,' '))
 	{
 		//create new char* of size line
-		char* lineC= new char(sizeof(line.c_str()));
-		strcpy(lineC,line.c_str());
+		char* lineC = new char(sizeof(command.c_str()));
+		strcpy(lineC,command.c_str());
 		s.push_back(lineC);
 	}
-
-	cout << s.size() << endl;
-
-
 	return s;
 }
