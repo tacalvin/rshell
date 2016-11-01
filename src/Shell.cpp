@@ -72,9 +72,9 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 			// Base* right = treeStack.top();
 			// treeStack.pop();
 			// treeStack.push(new SemiOperator(left, right));
-			Base* left = treeStack.top();
+			Base* right = treeStack.top();
 			treeStack.pop();
-			Base* right = buildCommand(commandStack);
+			Base* left = buildCommand(commandStack);
 			treeStack.push(new SemiOperator(left, right));
 		}
 		else if (currString == "&&")
