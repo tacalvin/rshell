@@ -75,9 +75,65 @@ vector<char*> Shell::parse()
 	//get all input as a single line
 	string line;
 	getline(cin,line);
+	char currChar = '';
+	string delimiters = ";|&";
+	vector<string> commandVector;
+
+	istringstream ss(line);
+	string command = "";
+	
+	// the purpose of this loop is the create a vector of strings of individual
+	// commands to parse seperately, operators are their own entries
+	while(ss.get(currChar)) 
+	{
+		size_t delimStatus = delimiter.find(currChar);
+		// if the current character is not a delimiter
+		if (delimStatus == string::npos)
+		{
+			// add the character as part of the command
+			command.push_back(currChar);
+		}
+		else
+		{
+			//if the current character is a delimiter candidate
+			if (currChar == ';') 
+			{
+				commandVector.push_back(command);
+				command = ";";
+				commandVector.push_back(command);
+				command = "";
+			}
+			else if (currChar == '&' && ss.peek() == '&')
+			{
+				commandVector.push_back(command);
+				command = "&&";
+				commandVector.push_back(command);
+				command = "";
+				// remove extra &
+				currChar = ss.get();
+			}
+			else if (currChar == '|' && ss.peek() == '|')
+			{
+				commandVector.push_back(command);
+				command = "||";
+				commandVector.push_back(command);
+				command = "";
+				currChar = ss.get();
+			}
+			else 
+			{
+				command.push_back(currChar);
+			}
+		}
+	}
+	
+	//TODO: test case of what happens if there is a leading space
 
 	//split using string sstream
-	istringstream ss(line);
+	ss.str("");
+	ss.clear();
+	ss.str(line);
+	
 	//since char** is needed converting const char* to char* via copying
 	while(getline(ss,line,' '))
 	{
