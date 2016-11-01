@@ -57,23 +57,24 @@ void Shell::run()
 	}
 }
 
-Base* Shell::buildCommand(stack<string> commandStack)
+Base* Shell::buildCommand(stack<string>& commandStack)
 {
 	stack<Base*> treeStack;
 	while (!commandStack.empty())
 	{
 		string currString = commandStack.top();
 		commandStack.pop();
-		cout << currString << " " << treeStack.size() << endl;
-		
 		
 		if (currString == ";")
 		{
-			cout << commandStack.top() << " " << treeStack.size() << endl;
-			Base* left = new Command(convertCharVector(commandStack.top()));
-			commandStack.pop();
-			Base* right = treeStack.top();
+			// Base* left = new Command(convertCharVector(commandStack.top()));
+			// commandStack.pop();
+			// Base* right = treeStack.top();
+			// treeStack.pop();
+			// treeStack.push(new SemiOperator(left, right));
+			Base* left = treeStack.top();
 			treeStack.pop();
+			Base* right = buildCommand(commandStack);
 			treeStack.push(new SemiOperator(left, right));
 		}
 		else if (currString == "&&")
@@ -113,7 +114,7 @@ stack<string> Shell::parse()
 	getline(cin,line);
 	char currChar;
 	string delimiters = ";|&";
-	stack<std::string> commandStack;
+	stack<string> commandStack;
 
 	istringstream ss(line);
 	
@@ -135,25 +136,25 @@ stack<string> Shell::parse()
 			//if the current character is a delimiter candidate
 			if (currChar == ';') 
 			{
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = ";";
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = "";
 			}
 			else if (currChar == '&' && ss.peek() == '&')
 			{
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = "&&";
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = "";
 				// remove extra &
 				currChar = ss.get();
 			}
 			else if (currChar == '|' && ss.peek() == '|')
 			{
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = "||";
-				commandStack.push(command);
+				cleanPush(commandStack, command);
 				command = "";
 				currChar = ss.get();
 			}
@@ -163,11 +164,18 @@ stack<string> Shell::parse()
 			}
 		}
 	}
-	commandStack.push(command);
+	cleanPush(commandStack, command);
 	//TODO: test case of what happens if there is a leading space
 
 
 	return commandStack;
+}
+
+void Shell::cleanPush(stack<string>& targetStack, string target)
+{
+    target.erase(0, target.find_first_not_of(' '));
+    target.erase(target.find_last_not_of(' ') + 1);
+	targetStack.push(target);
 }
 
 vector<char*> Shell::convertCharVector(string command) 
