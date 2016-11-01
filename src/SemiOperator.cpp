@@ -1,4 +1,4 @@
-#include "./include/SemiOperator.h"
+#include "./headers/SemiOperator.h"
 
 SemiOperator::SemiOperator(Base* left, Base* right) : Operator(left, right)
 {}

@@ -1,4 +1,4 @@
-#include "./include/AndOperator.h"
+#include "./headers/AndOperator.h"
 
 AndOperator::AndOperator(Base* left, Base* right) : Operator(left, right)
 {}

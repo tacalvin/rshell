@@ -1,4 +1,4 @@
-#include "./include/Operator.h"
+#include "./headers/Operator.h"
 
 Operator::Operator(Base* left, Base* right)
 {

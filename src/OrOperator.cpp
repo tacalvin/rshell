@@ -1,4 +1,4 @@
-#include "./include/OrOperator.h"
+#include "./headers/OrOperator.h"
 
 OrOperator::OrOperator(Base* left, Base* right) : Operator(left, right)
 {}

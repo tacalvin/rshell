@@ -1,6 +1,6 @@
-#include "./include/Shell.h"
-#include "./include/Base.h"
-#include "./include/Command.h"
+#include "./headers/Shell.h"
+#include "./headers/Base.h"
+#include "./headers/Command.h"
 #include <vector>
 #include <iostream>
 #include <unistd.h>

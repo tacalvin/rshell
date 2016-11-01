@@ -1,6 +1,6 @@
 #include <iostream>
-#include "./include/Command.h"
-#include "./include/Base.h"
+#include "./headers/Command.h"
+#include "./headers/Base.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
