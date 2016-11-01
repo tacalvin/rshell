@@ -4,7 +4,7 @@ debug: CCFLAGS += -g
 debug: all
 all:main Shell Command And Operator Semi Or
 	mkdir -p bin
-	$(CC) $(CCFLAGS) main.o Shell.o Command.o AndOperator.o Operator.o SemiOperator.o OrOperator.o-o ./bin/rshell
+	$(CC) $(CCFLAGS) main.o Shell.o Command.o AndOperator.o Operator.o SemiOperator.o OrOperator.o -o ./bin/rshell
 main:
 	$(CC) $(CCFLAGS) -c ./src/main.cpp
 Shell:
