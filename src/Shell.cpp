@@ -8,6 +8,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <csignal>
+#include <stdexcept>
 
 const int BUFFSIZE = 1024;
 const char* AND = "&&";
@@ -47,7 +48,7 @@ void Shell::run()
 
 		cout << uname << "@" << hname  << "$" << endl;
 		// cout << "windows$" << endl;
-		vector<char*> cmds = parse();
+		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
 		// cout <<"Status: "<< res << endl;
@@ -56,37 +57,63 @@ void Shell::run()
 	}
 }
 
-Base* Shell::buildCommand(vector<char*> args)
+Base* Shell::buildCommand(stack<string> commandStack)
 {
-	//build base tree
-	return new Command(args);
-	// for(unsigned i = 0; i < cmd.size();i++)
-	// {
-	//
-	// }
+	stack<Base*> treeStack;
+	while (!commandStack.empty())
+	{
+		string currString = commandStack.top();
+		commandStack.pop();
+		if (currString == ";")
+		{
+			Base* left = new Command(convertCharVector(commandStack.top()));
+			commandStack.pop();
+			treeStack.push(new SemiOperator(left, treeStack.top()));
+		}
+		else if (currString == "&&")
+		{
+			Base* left = new Command(convertCharVector(commandStack.top()));
+			commandStack.pop();
+			treeStack.push(new AndOperator(left, treeStack.top()));
+		}
+		else if (currString == "||")
+		{
+			Base* left = new Command(convertCharVector(commandStack.top()));
+			commandStack.pop();
+			treeStack.push(new OrOperator(left, treeStack.top()));
+		}
+		else
+		{
+			treeStack.push(new Command(convertCharVector(currString)));
+		}
+	}
+	
+	if (treeStack.size() != 1) throw runtime_error("tempstack building didn't work.");
+	return treeStack.top();
 }
-vector<char*> Shell::parse()
+stack<string> Shell::parse()
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
 	//getline(line,BUFFSIZE);
-	vector<char*> s;
+	//vector<char*> s;
 
 	//get all input as a single line
 	string line;
 	getline(cin,line);
-	char currChar = '';
+	char currChar;
 	string delimiters = ";|&";
-	vector<string> commandVector;
+	stack<std::string> commandStack;
 
 	istringstream ss(line);
+	
 	string command = "";
 	
 	// the purpose of this loop is the create a vector of strings of individual
 	// commands to parse seperately, operators are their own entries
 	while(ss.get(currChar)) 
 	{
-		size_t delimStatus = delimiter.find(currChar);
+		size_t delimStatus = delimiters.find(currChar);
 		// if the current character is not a delimiter
 		if (delimStatus == string::npos)
 		{
@@ -98,25 +125,25 @@ vector<char*> Shell::parse()
 			//if the current character is a delimiter candidate
 			if (currChar == ';') 
 			{
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = ";";
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = "";
 			}
 			else if (currChar == '&' && ss.peek() == '&')
 			{
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = "&&";
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = "";
 				// remove extra &
 				currChar = ss.get();
 			}
 			else if (currChar == '|' && ss.peek() == '|')
 			{
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = "||";
-				commandVector.push_back(command);
+				commandStack.push(command);
 				command = "";
 				currChar = ss.get();
 			}
@@ -126,25 +153,25 @@ vector<char*> Shell::parse()
 			}
 		}
 	}
-	
+	commandStack.push(command);
 	//TODO: test case of what happens if there is a leading space
 
-	//split using string sstream
-	ss.str("");
-	ss.clear();
-	ss.str(line);
+
+	return commandStack;
+}
+
+vector<char*> Shell::convertCharVector(string command) 
+{
+	vector<char*> s;
+	istringstream ss(command);
 	
 	//since char** is needed converting const char* to char* via copying
-	while(getline(ss,line,' '))
+	while(getline(ss,command,' '))
 	{
 		//create new char* of size line
-		char* lineC= new char(sizeof(line.c_str()));
-		strcpy(lineC,line.c_str());
+		char* lineC = new char(sizeof(command.c_str()));
+		strcpy(lineC,command.c_str());
 		s.push_back(lineC);
 	}
-
-	cout << s.size() << endl;
-
-
 	return s;
 }
