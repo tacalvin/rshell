@@ -46,8 +46,8 @@ void Shell::run()
 	while(status)
 	{
 
-		cout << uname << "@" << hname  << "$" << endl;
-		// cout << "windows$" << endl;
+		//cout << uname << "@" << hname  << "$" << endl;
+		cout << "windows$" << endl;
 		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
@@ -64,23 +64,33 @@ Base* Shell::buildCommand(stack<string> commandStack)
 	{
 		string currString = commandStack.top();
 		commandStack.pop();
+		cout << currString << " " << treeStack.size() << endl;
+		
+		
 		if (currString == ";")
 		{
+			cout << commandStack.top() << " " << treeStack.size() << endl;
 			Base* left = new Command(convertCharVector(commandStack.top()));
 			commandStack.pop();
-			treeStack.push(new SemiOperator(left, treeStack.top()));
+			Base* right = treeStack.top();
+			treeStack.pop();
+			treeStack.push(new SemiOperator(left, right));
 		}
 		else if (currString == "&&")
 		{
 			Base* left = new Command(convertCharVector(commandStack.top()));
 			commandStack.pop();
-			treeStack.push(new AndOperator(left, treeStack.top()));
+			Base* right = treeStack.top();
+			treeStack.pop();
+			treeStack.push(new AndOperator(left, right));
 		}
 		else if (currString == "||")
 		{
 			Base* left = new Command(convertCharVector(commandStack.top()));
 			commandStack.pop();
-			treeStack.push(new OrOperator(left, treeStack.top()));
+			Base* right = treeStack.top();
+			treeStack.pop();
+			treeStack.push(new OrOperator(left, right));
 		}
 		else
 		{
