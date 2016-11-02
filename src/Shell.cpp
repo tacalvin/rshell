@@ -51,17 +51,17 @@ void Shell::run()
 
 		cout << uname << "@" << hname  << "$" << endl;
 		stack<string> cmds = parse();
+		if(eof)
+		{
+			cin.clear();
+			fseek(stdin,0,SEEK_END);	
+			eof = false;
+			//continue;
+		}
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
 		uname = getpwuid(getuid())->pw_name;
 
-		if(eof)
-		{
-			cin.clear();
-	
-			eof = false;
-			continue;
-		}
 	}
 
 }
@@ -123,8 +123,7 @@ stack<string> Shell::parse()
 	if(!getline(cin,line))
 	{
 		eof = true;
-		cout <<"EOF" <<endl;
-		cin.clear();
+		exit(0);
 	}
 
 	char currChar;
