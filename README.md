@@ -29,3 +29,6 @@ We will be using version control in the form of git and github. We will slowly i
 #Roadblocks
 Issues that may come up may be communication or lack of detail with regards to implementation. In addition, we are implementing things one step at a time, so it may be difficult to add in new features if we make it difficult to add them on as we go. We should attempt to keep clean and clear class roles so that the design doesn’t become too complicated for newer features.
 
+#Current Bugs
+cd does not work with Operators
+When testing with shell scripts rshell will close at the end. While this is by design at the moment this is not a desired feature.
