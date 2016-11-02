@@ -48,20 +48,23 @@ void Shell::run()
  signal(SIGINT,signalHandler);
 	while(true)
 	{
-
 		cout << uname << "@" << hname  << "$" << endl;
-		stack<string> cmds = parse();
-		if(eof)
+		try 
 		{
-			cin.clear();
-			fseek(stdin,0,SEEK_END);	
-			eof = false;
-			//continue;
+			stack<string> cmds = parse();
+				cin.clear();
+				fseek(stdin,0,SEEK_END);	
+				eof = false;
+				//continue;
+			
+			Base* cmd = buildCommand(cmds);
+			cmd->evaluate();
+			uname = getpwuid(getuid())->pw_name;
 		}
-		Base* cmd = buildCommand(cmds);
-		cmd->evaluate();
-		uname = getpwuid(getuid())->pw_name;
-
+		catch (runtime_error& e)
+		{
+			cout << e.what() << endl;
+		}
 	}
 
 }
@@ -76,11 +79,6 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 		
 		if (currString == ";")
 		{
-			// Base* left = new Command(convertCharVector(commandStack.top()));
-			// commandStack.pop();
-			// Base* right = treeStack.top();
-			// treeStack.pop();
-			// treeStack.push(new SemiOperator(left, right));
 			Base* right = treeStack.top();
 			treeStack.pop();
 			Base* left = buildCommand(commandStack);
@@ -131,7 +129,8 @@ stack<string> Shell::parse()
 	stack<string> commandStack;
 
 	istringstream ss(line);
-	
+	// false = operator is not fine, true = operator fine
+	bool operatorValid = false;
 	string command = "";
 	
 	// the purpose of this loop is the create a vector of strings of individual
@@ -146,33 +145,40 @@ stack<string> Shell::parse()
 		{
 			// add the character as part of the command
 			command.push_back(currChar);
+			operatorValid = true;
 		}
 		else
 		{
 			//if the current character is a delimiter candidate
 			if (currChar == ';') 
 			{
+				if (!operatorValid) throw runtime_error("syntax error near unexpected token `;'");
 				cleanPush(commandStack, command);
 				command = ";";
 				cleanPush(commandStack, command);
 				command = "";
+				operatorValid = false;
 			}
 			else if (currChar == '&' && ss.peek() == '&')
 			{
+				if (!operatorValid) throw runtime_error("syntax error near unexpected token `&&'");
 				cleanPush(commandStack, command);
 				command = "&&";
 				cleanPush(commandStack, command);
 				command = "";
 				// remove extra &
 				currChar = ss.get();
+				operatorValid = false;
 			}
 			else if (currChar == '|' && ss.peek() == '|')
 			{
+				if (!operatorValid) throw runtime_error("syntax error near unexpected token `||'");
 				cleanPush(commandStack, command);
 				command = "||";
 				cleanPush(commandStack, command);
 				command = "";
 				currChar = ss.get();
+				operatorValid = false;
 			}
 			else 
 			{
