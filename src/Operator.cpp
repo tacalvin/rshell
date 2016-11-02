@@ -7,4 +7,7 @@ Operator::Operator(Base* left, Base* right)
 }
 
 Operator::~Operator()
-{}
+{
+	delete left;
+	delete right;
+}

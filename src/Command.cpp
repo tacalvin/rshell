@@ -11,6 +11,13 @@ Command::Command(vector<char*> s)
   cmd = s;
 }
 
+Command::~Command()
+{
+	for(vector<char*>::iterator it = cmd.begin(); it != cmd.end(); it++)
+		delete *it;
+	cmd.clear();
+}
+
 int cd(char* args)
 {
 	int condition = chdir(args);
@@ -69,6 +76,8 @@ bool Command::evaluate()
     do
     {
       wpid = waitpid(pid, &status, WUNTRACED);
+      if(wpid == -1)
+      	perror("error waiting");
     }
     while (!WIFEXITED(status) && !WIFSIGNALED(status));
     return status;

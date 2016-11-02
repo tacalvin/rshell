@@ -37,8 +37,14 @@ void Shell::run()
 {
 	//getlogin does not work on windows bash atm
 	char* uname = getlogin();
+	if(uname == NULL)
+		perror("error getting login");
 	char hname[BUFFSIZE];
 	gethostname(hname,BUFFSIZE);
+
+	if(hname == NULL)
+		perror("error getting hostname");
+	
 	int status = 1;
 	//register signal handler
 	// signal(SIGINT,signalHandler);
@@ -126,6 +132,8 @@ stack<string> Shell::parse()
 	{
 		size_t delimStatus = delimiters.find(currChar);
 		// if the current character is not a delimiter
+		if (currChar =='#')
+			break;
 		if (delimStatus == string::npos)
 		{
 			// add the character as part of the command
@@ -167,6 +175,8 @@ stack<string> Shell::parse()
 	cleanPush(commandStack, command);
 	//TODO: test case of what happens if there is a leading space
 
+	//debug
+	cout << "LINE: " << line <<endl;
 
 	return commandStack;
 }
