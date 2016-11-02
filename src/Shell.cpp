@@ -2,6 +2,7 @@
 #include "./headers/Base.h"
 #include "./headers/Command.h"
 #include <vector>
+#include <pwd.h>
 #include <iostream>
 #include <unistd.h>
 #include <sstream>
@@ -23,22 +24,20 @@ Shell::Shell()
 	//do configuration stuff here
 }
 
-// void Shell::signalHandler( int signum )
-// {
-//    cout << "Interrupt signal (" << signum << ") received.\n";
-//
-//    // cleanup and close up stuff here
-//    // terminate program
-//
-//    exit(signum);
-//
-// }
+ void signalHandler( int signum )
+ {
+    cout << "Interrupt signal (" << signum << ") received.\n";
+
+    // cleanup and close up stuff here
+    // terminate program
+
+    exit(signum);
+
+ }
 void Shell::run()
 {
 	//getlogin does not work on windows bash atm
-	char* uname = getlogin();
-	if(uname == NULL)
-		perror("error getting login");
+	char* uname = getpwuid(getuid())->pw_name;
 	char hname[BUFFSIZE];
 	gethostname(hname,BUFFSIZE);
 
@@ -46,19 +45,25 @@ void Shell::run()
 		perror("error getting hostname");
 	
 	//register signal handler
-	// signal(SIGINT,signalHandler);
-	string line;
-	cout << uname << "@" << hname  << "$" << endl;
-
-	while(getline(cin,line))
+ signal(SIGINT,signalHandler);
+	while(true)
 	{
 
 		cout << uname << "@" << hname  << "$" << endl;
-		stack<string> cmds = parse(line);
+		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
-		uname = getlogin();
+		uname = getpwuid(getuid())->pw_name;
+
+		if(eof)
+		{
+			cin.clear();
+	
+			eof = false;
+			continue;
+		}
 	}
+
 }
 
 Base* Shell::buildCommand(stack<string>& commandStack)
@@ -106,7 +111,7 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 	if (treeStack.size() != 1) throw runtime_error("tempstack building didn't work.");
 	return treeStack.top();
 }
-stack<string> Shell::parse(string line)
+stack<string> Shell::parse()
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
@@ -114,7 +119,14 @@ stack<string> Shell::parse(string line)
 	//vector<char*> s;
 
 	//get all input as a single line
-	
+	string line;
+	if(!getline(cin,line))
+	{
+		eof = true;
+		cout <<"EOF" <<endl;
+		cin.clear();
+	}
+
 	char currChar;
 	string delimiters = ";|&";
 	stack<string> commandStack;
