@@ -79,9 +79,9 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 		
 		if (currString == ";")
 		{
+			Base* left = buildCommand(commandStack);
 			Base* right = treeStack.top();
 			treeStack.pop();
-			Base* left = buildCommand(commandStack);
 			treeStack.push(new SemiOperator(left, right));
 		}
 		else if (currString == "&&")
@@ -210,7 +210,8 @@ vector<char*> Shell::convertCharVector(string command)
 	while(getline(ss,command,' '))
 	{
 		//create new char* of size line
-		char* lineC = new char(sizeof(command.c_str()));
+		char* lineC = new char[command.size()];
+		//char* lineC = new char(sizeof(command.c_str()));
 		strcpy(lineC,command.c_str());
 		s.push_back(lineC);
 	}
