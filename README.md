@@ -18,7 +18,7 @@ This will deal with configuration files
 
 #Diagram
 
-
+![Alt text](https://github.com/tacalvin/rshell/blob/master/diagram.png "UML Diagram")
 
 
 
