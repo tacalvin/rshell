@@ -8,6 +8,7 @@ class Command : public Base
 {
 public:
   Command(vector<char*> s);
+  ~Command();
   bool evaluate();
 private:
   vector<char*> cmd;

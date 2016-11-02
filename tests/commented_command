@@ -1,0 +1,6 @@
+ls # echo A
+echo A # ls
+#echo A; date; ls;
+#echo A && ls
+#exit
+echo A

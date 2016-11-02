@@ -15,10 +15,11 @@ public:
   void run();
   stack<string> parse();
   Base* buildCommand(stack<string>& commandStack);
-  void (*signal(int signo, void (*func )(int)))(int);
+//  void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
 private:
   void cleanPush(stack<string>&, string);
   vector<char*> convertCharVector(string command);
+  bool eof =false;
 };
 #endif

@@ -11,6 +11,13 @@ Command::Command(vector<char*> s)
   cmd = s;
 }
 
+Command::~Command()
+{
+	for(vector<char*>::iterator it = cmd.begin(); it != cmd.end(); it++)
+		delete *it;
+	cmd.clear();
+}
+
 int cd(char* args)
 {
 	int condition = chdir(args);
@@ -26,6 +33,9 @@ void exitf()
 // Will return false if no erros and true if there are errors
 bool Command::evaluate()
 {
+  if(cmd.size() == 0)
+  	return false;
+
   if(!strcmp(cmd.at(0),"exit")) 
   {
 	  exitf();
@@ -36,6 +46,9 @@ bool Command::evaluate()
 	  int condition = chdir(cmd.at(1));
 	  return !condition;
   }
+
+
+
   pid_t pid, wpid;
   int status;
   //execvp needs a null terminated char **
@@ -69,6 +82,8 @@ bool Command::evaluate()
     do
     {
       wpid = waitpid(pid, &status, WUNTRACED);
+      if(wpid == -1)
+      	perror("error waiting");
     }
     while (!WIFEXITED(status) && !WIFSIGNALED(status));
     return status;

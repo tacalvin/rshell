@@ -2,6 +2,7 @@
 #include "./headers/Base.h"
 #include "./headers/Command.h"
 #include <vector>
+#include <pwd.h>
 #include <iostream>
 #include <unistd.h>
 #include <sstream>
@@ -23,38 +24,46 @@ Shell::Shell()
 	//do configuration stuff here
 }
 
-// void Shell::signalHandler( int signum )
-// {
-//    cout << "Interrupt signal (" << signum << ") received.\n";
-//
-//    // cleanup and close up stuff here
-//    // terminate program
-//
-//    exit(signum);
-//
-// }
+ void signalHandler( int signum )
+ {
+    cout << "Interrupt signal (" << signum << ") received.\n";
+
+    // cleanup and close up stuff here
+    // terminate program
+
+    exit(signum);
+
+ }
 void Shell::run()
 {
 	//getlogin does not work on windows bash atm
-	char* uname = getlogin();
+	char* uname = getpwuid(getuid())->pw_name;
 	char hname[BUFFSIZE];
 	gethostname(hname,BUFFSIZE);
-	int status = 1;
-	//register signal handler
-	// signal(SIGINT,signalHandler);
 
-	while(status)
+	if(hname == NULL)
+		perror("error getting hostname");
+	
+	//register signal handler
+ signal(SIGINT,signalHandler);
+	while(true)
 	{
 
 		cout << uname << "@" << hname  << "$" << endl;
-		
 		stack<string> cmds = parse();
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
-		// cout <<"Status: "<< res << endl;
-		uname = getlogin();
-		gethostname(hname,BUFFSIZE);
+		uname = getpwuid(getuid())->pw_name;
+
+		if(eof)
+		{
+			cin.clear();
+	
+			eof = false;
+			continue;
+		}
 	}
+
 }
 
 Base* Shell::buildCommand(stack<string>& commandStack)
@@ -111,7 +120,13 @@ stack<string> Shell::parse()
 
 	//get all input as a single line
 	string line;
-	getline(cin,line);
+	if(!getline(cin,line))
+	{
+		eof = true;
+		cout <<"EOF" <<endl;
+		cin.clear();
+	}
+
 	char currChar;
 	string delimiters = ";|&";
 	stack<string> commandStack;
@@ -126,6 +141,8 @@ stack<string> Shell::parse()
 	{
 		size_t delimStatus = delimiters.find(currChar);
 		// if the current character is not a delimiter
+		if (currChar =='#')
+			break;
 		if (delimStatus == string::npos)
 		{
 			// add the character as part of the command
@@ -167,6 +184,7 @@ stack<string> Shell::parse()
 	cleanPush(commandStack, command);
 	//TODO: test case of what happens if there is a leading space
 
+	//debug
 
 	return commandStack;
 }
