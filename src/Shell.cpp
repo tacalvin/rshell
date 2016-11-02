@@ -45,21 +45,19 @@ void Shell::run()
 	if(hname == NULL)
 		perror("error getting hostname");
 	
-	int status = 1;
 	//register signal handler
 	// signal(SIGINT,signalHandler);
+	string line;
+	cout << uname << "@" << hname  << "$" << endl;
 
-	while(status)
+	while(getline(cin,line))
 	{
 
 		cout << uname << "@" << hname  << "$" << endl;
-		
-		stack<string> cmds = parse();
+		stack<string> cmds = parse(line);
 		Base* cmd = buildCommand(cmds);
 		cmd->evaluate();
-		// cout <<"Status: "<< res << endl;
 		uname = getlogin();
-		gethostname(hname,BUFFSIZE);
 	}
 }
 
@@ -108,7 +106,7 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 	if (treeStack.size() != 1) throw runtime_error("tempstack building didn't work.");
 	return treeStack.top();
 }
-stack<string> Shell::parse()
+stack<string> Shell::parse(string line)
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
@@ -116,8 +114,7 @@ stack<string> Shell::parse()
 	//vector<char*> s;
 
 	//get all input as a single line
-	string line;
-	getline(cin,line);
+	
 	char currChar;
 	string delimiters = ";|&";
 	stack<string> commandStack;
@@ -176,7 +173,6 @@ stack<string> Shell::parse()
 	//TODO: test case of what happens if there is a leading space
 
 	//debug
-	cout << "LINE: " << line <<endl;
 
 	return commandStack;
 }

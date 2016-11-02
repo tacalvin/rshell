@@ -1,0 +1,5 @@
+echo A || echo B #only prints A
+echo A && echo B #prints both
+ls -! && echo A # should not echo
+ls -!; echo B # should echo B
+echo A; echo B && echo C || echo D

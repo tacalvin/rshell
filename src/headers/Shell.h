@@ -13,7 +13,7 @@ class Shell
 public:
   Shell();
   void run();
-  stack<string> parse();
+  stack<string> parse(string s);
   Base* buildCommand(stack<string>& commandStack);
   void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
