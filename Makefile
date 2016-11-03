@@ -1,7 +1,7 @@
 
 CC = g++
 CCFLAGS = -Wall  -std=c++11
-debug: CCFLAGS += -g
+debug: CCFLAGS += -ggdb
 debug: all
 all:main Shell Command And Operator Semi Or
 	mkdir -p bin
