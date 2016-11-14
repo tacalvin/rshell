@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string.h>
 #include <cstdlib>
+#include <stdio.h>
+#include <errno.h>
 #include <csignal>
 #include <stdexcept>
 
@@ -46,25 +48,27 @@ void Shell::run()
 	
 	//register signal handler
  signal(SIGINT,signalHandler);
-	while(true)
+ string line;
+ while(getline(cin,line))
 	{
+    cout << "Hello" << endl;
 		cout << uname << "@" << hname  << "$" << endl;
-		try 
-		{
-			stack<string> cmds = parse();
-				cin.clear();
-				fseek(stdin,0,SEEK_END);	
-				eof = false;
+		//try 
+		//{
+			stack<string> cmds = parse(line);
+			//	cin.clear();
+      //fseek(stdin,0,SEEK_END);	
+      //eof = false;
 				//continue;
 			
 			Base* cmd = buildCommand(cmds);
 			cmd->evaluate();
 			uname = getpwuid(getuid())->pw_name;
-		}
-		catch (runtime_error& e)
-		{
-			cout << e.what() << endl;
-		}
+      //}
+      //	catch (runtime_error& e)
+      //{
+      //	cout << e.what() << endl;
+      //}
 	}
 
 }
@@ -109,7 +113,7 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 	if (treeStack.size() != 1) throw runtime_error("tempstack building didn't work.");
 	return treeStack.top();
 }
-stack<string> Shell::parse()
+stack<string> Shell::parse(string line)
 {
 	//c-string ver
 	//char* line[BUFFSIZE];
@@ -117,12 +121,12 @@ stack<string> Shell::parse()
 	//vector<char*> s;
 
 	//get all input as a single line
-	string line;
-	if(!getline(cin,line))
-	{
-		eof = true;
-		exit(0);
-	}
+	//string line;
+	//if(!getline(cin,line))
+	//{
+	//	eof = true;
+	//	exit(0);
+	//}
 
 	char currChar;
 	string delimiters = ";|&";

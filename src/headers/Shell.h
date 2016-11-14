@@ -13,13 +13,12 @@ class Shell
 public:
   Shell();
   void run();
-  stack<string> parse();
+  stack<string> parse(string line);
   Base* buildCommand(stack<string>& commandStack);
 //  void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
 private:
   void cleanPush(stack<string>&, string);
   vector<char*> convertCharVector(string command);
-  bool eof =false;
 };
 #endif

@@ -4,7 +4,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdio.h>
 #include <string.h>
+#include <errno.h>
 using namespace std;
 Command::Command(vector<char*> s)
 {
@@ -26,7 +28,7 @@ int cd(char* args)
 
 void exitf()
 {
-	exit(0);
+	_exit(0);
 }
 
 
@@ -67,7 +69,7 @@ bool Command::evaluate()
       perror("Exec failed");
 
     }
-    exit(EXIT_FAILURE);
+    _exit(-1);
 
   }
   else if (pid < 0)
