@@ -49,6 +49,7 @@ void Shell::run()
 	//register signal handler
  signal(SIGINT,signalHandler);
  string line;
+cout << uname <<"@" << hname <<"$" << endl;
  while(getline(cin,line))
 	{
 		cout << uname << "@" << hname  << "$" << endl;
