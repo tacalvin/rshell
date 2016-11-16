@@ -31,5 +31,4 @@ Issues that may come up may be communication or lack of detail with regards to i
 
 #Current Bugs
 cd does not work with Operators
-When testing with shell scripts rshell will close at the end. While this is by design at the moment this is not a desired feature.
-Very long invalid commands cause segfaults
+
