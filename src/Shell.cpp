@@ -45,13 +45,12 @@ void Shell::run()
 
 	if(hname == NULL)
 		perror("error getting hostname");
-	
+	cout << uname << "@" << hname  << "$" << endl;
 	//register signal handler
  signal(SIGINT,signalHandler);
  string line;
  while(getline(cin,line))
 	{
-    cout << "Hello" << endl;
 		cout << uname << "@" << hname  << "$" << endl;
 		//try 
 		//{
