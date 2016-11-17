@@ -53,22 +53,24 @@ void Shell::run()
 	{
     cout << "Hello" << endl;
 		cout << uname << "@" << hname  << "$" << endl;
-		//try 
-		//{
+		try 
+		{
 			stack<string> cmds = parse(line);
 			//	cin.clear();
       //fseek(stdin,0,SEEK_END);	
       //eof = false;
 				//continue;
+				cout << cmds.size() << endl;
+				cin >> line;
 			
 			Base* cmd = buildCommand(cmds);
 			cmd->evaluate();
 			uname = getpwuid(getuid())->pw_name;
-      //}
-      //	catch (runtime_error& e)
-      //{
-      //	cout << e.what() << endl;
-      //}
+      }
+      	catch (runtime_error& e)
+      {
+      	cout << e.what() << endl;
+      }
 	}
 
 }
@@ -129,10 +131,27 @@ stack<string> Shell::parse(string line)
 	//}
 
 	char currChar;
-	string delimiters = ";|&";
+	string delimiters = ";|&()";
 	stack<string> commandStack;
 
 	istringstream ss(line);
+	int parenthesisStatus = 0;
+	
+	//shit solution, but simple, iterate through and increment for each (, decrement for each ), must be 0 and
+	//should never go to negative if valid
+	while(ss.get(currChar))
+	{
+		if (currChar == '(')
+			parenthesisStatus++;
+		else if (currChar == ')')
+			parenthesisStatus--;
+		
+		if (parenthesisStatus < 0) throw runtime_error("1syntax error near unexpected token ')'");
+	}
+	if (parenthesisStatus) throw runtime_error("2syntax error near unexpected token '('");
+	ss.clear();
+	ss.str(line);
+	
 	// false = operator is not fine, true = operator fine
 	bool operatorValid = false;
 	string command = "";
@@ -145,7 +164,7 @@ stack<string> Shell::parse(string line)
 		// if the current character is not a delimiter
 		if (currChar =='#')
 			break;
-		if (delimStatus == string::npos)
+		if (delimStatus == string::npos && !ss.eof())
 		{
 			// add the character as part of the command
 			command.push_back(currChar);
@@ -154,7 +173,22 @@ stack<string> Shell::parse(string line)
 		else
 		{
 			//if the current character is a delimiter candidate
-			if (currChar == ';') 
+			if (currChar == '(')
+			{
+				if (!operatorValid) throw runtime_error("3syntax error near unexpected token '('");
+				command = "(";
+				cleanPush(commandStack, command);
+				command = "";
+			}
+			else if (currChar == ')')
+			{
+				if (!operatorValid) throw runtime_error("4syntax error near unexpected token ')'");
+				cleanPush(commandStack, command);
+				command = ")";
+				cleanPush(commandStack, command);
+				command = "";
+			}
+			else if (currChar == ';') 
 			{
 				if (!operatorValid) throw runtime_error("syntax error near unexpected token `;'");
 				cleanPush(commandStack, command);
@@ -190,6 +224,8 @@ stack<string> Shell::parse(string line)
 			}
 		}
 	}
+	if (!operatorValid) throw runtime_error("syntax error near unexpected ending token");
+	
 	cleanPush(commandStack, command);
 	//TODO: test case of what happens if there is a leading space
 
@@ -200,8 +236,10 @@ stack<string> Shell::parse(string line)
 
 void Shell::cleanPush(stack<string>& targetStack, string target)
 {
+	if (target == "") return;
     target.erase(0, target.find_first_not_of(' '));
     target.erase(target.find_last_not_of(' ') + 1);
+    cout << "pushing " << target << endl;
 	targetStack.push(target);
 }
 
