@@ -8,6 +8,6 @@ OrOperator::~OrOperator()
 
 bool OrOperator::evaluate() 
 {
-  if (!left->evaluate()) return right->evaluate();
+  if (left->evaluate()) return right->evaluate();
     else return false;
 }
