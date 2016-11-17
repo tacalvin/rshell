@@ -290,7 +290,6 @@ void Shell::cleanPush(stack<string>& targetStack, string target)
 	if (target == "" || target.find_first_not_of(' ') == string::npos) return;
     target.erase(0, target.find_first_not_of(' '));
     target.erase(target.find_last_not_of(' ') + 1);
-    cout << "pushing " << target << endl;
 	targetStack.push(target);
 }
 
