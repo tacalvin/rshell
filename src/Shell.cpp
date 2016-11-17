@@ -45,14 +45,14 @@ void Shell::run()
 
 	if(hname == NULL)
 		perror("error getting hostname");
-	cout << uname << "@" << hname  << "$" << endl;
+	cout << uname << "@" << hname  << "$ ";
 	//register signal handler
  signal(SIGINT,signalHandler);
  string line;
-cout << uname <<"@" << hname <<"$" << endl;
+ //cout << uname <<"@" << hname <<"$" ;
  while(getline(cin,line))
 	{
-		cout << uname << "@" << hname  << "$" << endl;
+
 		try 
 		{
 			stack<string> cmds = parse(line);
@@ -66,8 +66,10 @@ cout << uname <<"@" << hname <<"$" << endl;
 			Base* cmd = buildCommand(cmds);
 			cmd->evaluate();
 			uname = getpwuid(getuid())->pw_name;
+			cout << endl;
+    		cout << uname << "@" << hname  << "$ " ;
       }
-      	catch (runtime_error& e)
+      catch (runtime_error& e)
       {
       	cout << e.what() << endl;
       }
