@@ -18,6 +18,7 @@ public:
 //  void (*signal(int signo, void (*func )(int)))(int);
 //  ~Shell();
 private:
+  Base* buildParenthesis(stack<string>& commandStack);
   void cleanPush(stack<string>&, string);
   vector<char*> convertCharVector(string command);
 };

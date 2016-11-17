@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <csignal>
+#include <deque>
 #include <stdexcept>
 
 const int BUFFSIZE = 1024;
@@ -60,8 +61,6 @@ cout << uname <<"@" << hname <<"$" << endl;
       //fseek(stdin,0,SEEK_END);	
       //eof = false;
 				//continue;
-				cout << cmds.size() << endl;
-				cin >> line;
 			
 			Base* cmd = buildCommand(cmds);
 			cmd->evaluate();
@@ -75,6 +74,34 @@ cout << uname <<"@" << hname <<"$" << endl;
 
 }
 
+Base* Shell::buildParenthesis(stack<string>& commandStack) {
+	int counter = 1;
+	deque<string> tempDeque;
+	while (counter > 0) 
+	{
+		string tempString = commandStack.top();
+		commandStack.pop();
+		if (tempString == ")") 
+		{
+			counter++;
+			tempDeque.push_front(tempString);
+		}
+		else if (tempString == "(")
+		{
+			counter--;
+			if (counter > 0)
+				tempDeque.push_front(tempString);
+		}
+		else
+		{
+			tempDeque.push_front(tempString);
+		}
+	}
+	stack<string> dequeStack(tempDeque);
+
+	return buildCommand(dequeStack);
+}
+
 Base* Shell::buildCommand(stack<string>& commandStack)
 {
 	stack<Base*> treeStack;
@@ -83,7 +110,11 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 		string currString = commandStack.top();
 		commandStack.pop();
 		
-		if (currString == ";")
+		if (currString == ")") 
+		{
+			treeStack.push(buildParenthesis(commandStack));
+		}
+		else if (currString == ";")
 		{
 			Base* left = buildCommand(commandStack);
 			Base* right = treeStack.top();
@@ -92,16 +123,34 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 		}
 		else if (currString == "&&")
 		{
-			Base* left = new Command(convertCharVector(commandStack.top()));
-			commandStack.pop();
+			Base* left;
+			if (commandStack.top() == ")")
+			{
+				commandStack.pop();
+				left = buildParenthesis(commandStack);
+			}
+			else
+			{
+				left = new Command(convertCharVector(commandStack.top()));
+				commandStack.pop();
+			}
 			Base* right = treeStack.top();
 			treeStack.pop();
 			treeStack.push(new AndOperator(left, right));
 		}
 		else if (currString == "||")
 		{
-			Base* left = new Command(convertCharVector(commandStack.top()));
-			commandStack.pop();
+			Base* left;
+			if (commandStack.top() == ")")
+			{
+				commandStack.pop();
+				left = buildParenthesis(commandStack);
+			}
+			else
+			{
+				left = new Command(convertCharVector(commandStack.top()));
+				commandStack.pop();
+			}
 			Base* right = treeStack.top();
 			treeStack.pop();
 			treeStack.push(new OrOperator(left, right));
@@ -175,7 +224,7 @@ stack<string> Shell::parse(string line)
 			//if the current character is a delimiter candidate
 			if (currChar == '(')
 			{
-				if (!operatorValid) throw runtime_error("3syntax error near unexpected token '('");
+				if (!operatorValid && !commandStack.empty()) throw runtime_error("3syntax error near unexpected token '('");
 				command = "(";
 				cleanPush(commandStack, command);
 				command = "";
@@ -236,7 +285,7 @@ stack<string> Shell::parse(string line)
 
 void Shell::cleanPush(stack<string>& targetStack, string target)
 {
-	if (target == "") return;
+	if (target == "" || target.find_first_not_of(' ') == string::npos) return;
     target.erase(0, target.find_first_not_of(' '));
     target.erase(target.find_last_not_of(' ') + 1);
     cout << "pushing " << target << endl;
