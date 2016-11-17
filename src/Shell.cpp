@@ -197,9 +197,9 @@ stack<string> Shell::parse(string line)
 		else if (currChar == ')')
 			parenthesisStatus--;
 		
-		if (parenthesisStatus < 0) throw runtime_error("1syntax error near unexpected token ')'");
+		if (parenthesisStatus < 0) throw runtime_error("syntax error near unexpected token ')'");
 	}
-	if (parenthesisStatus) throw runtime_error("2syntax error near unexpected token '('");
+	if (parenthesisStatus) throw runtime_error("syntax error near unexpected token '('");
 	ss.clear();
 	ss.str(line);
 	
@@ -226,14 +226,14 @@ stack<string> Shell::parse(string line)
 			//if the current character is a delimiter candidate
 			if (currChar == '(')
 			{
-				if (!operatorValid && !commandStack.empty()) throw runtime_error("3syntax error near unexpected token '('");
+				if (!operatorValid && !commandStack.empty()) throw runtime_error("syntax error near unexpected token '('");
 				command = "(";
 				cleanPush(commandStack, command);
 				command = "";
 			}
 			else if (currChar == ')')
 			{
-				if (!operatorValid) throw runtime_error("4syntax error near unexpected token ')'");
+				if (!operatorValid) throw runtime_error("syntax error near unexpected token ')'");
 				cleanPush(commandStack, command);
 				command = ")";
 				cleanPush(commandStack, command);
