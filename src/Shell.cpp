@@ -56,6 +56,12 @@ void Shell::run()
 
 		try 
 		{
+      if(line == "")
+      {
+        cout << uname << "@" << hname<<"$ ";
+        continue;
+      }
+      
 			stack<string> cmds = parse(line);
 			//	cin.clear();
       //fseek(stdin,0,SEEK_END);	
@@ -169,18 +175,6 @@ Base* Shell::buildCommand(stack<string>& commandStack)
 }
 stack<string> Shell::parse(string line)
 {
-	//c-string ver
-	//char* line[BUFFSIZE];
-	//getline(line,BUFFSIZE);
-	//vector<char*> s;
-
-	//get all input as a single line
-	//string line;
-	//if(!getline(cin,line))
-	//{
-	//	eof = true;
-	//	exit(0);
-	//}
 
 	char currChar;
 	string delimiters = ";|&()";
@@ -198,10 +192,16 @@ stack<string> Shell::parse(string line)
 		else if (currChar == ')')
 			parenthesisStatus--;
 		
-		if (parenthesisStatus < 0) throw runtime_error("syntax error near unexpected token ')'");
+		if (parenthesisStatus < 0)
+      {
+      throw runtime_error("syntax error near unexpected token ')'");
+      }
 	}
-	if (parenthesisStatus) throw runtime_error("syntax error near unexpected token '('");
-	ss.clear();
+	if (parenthesisStatus)
+    {
+      throw runtime_error("syntax error near unexpected token '('");
+    }
+  ss.clear();
 	ss.str(line);
 	
 	// false = operator is not fine, true = operator fine
@@ -232,6 +232,10 @@ stack<string> Shell::parse(string line)
 				cleanPush(commandStack, command);
 				command = "";
 			}
+      else if (currChar == '#')
+      {
+        break;
+      }
 			else if (currChar == ')')
 			{
 				if (!operatorValid) throw runtime_error("syntax error near unexpected token ')'");

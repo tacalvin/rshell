@@ -128,7 +128,6 @@ bool Command::evaluate()
     if (res == -1)
     {
       perror("Exec failed");
-
     }
     _exit(-1);
 
@@ -137,6 +136,7 @@ bool Command::evaluate()
   {
     // Error forking
     perror("Forking Failed");
+    
     return true;
   }
   else
