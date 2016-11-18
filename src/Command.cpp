@@ -3,10 +3,13 @@
 #include "./headers/Base.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
+
 using namespace std;
 Command::Command(vector<char*> s)
 {
@@ -31,6 +34,57 @@ void exitf()
 	_exit(0);
 }
 
+bool testf(vector<char *> cmds)
+{
+  //remove either test or [] from vector
+  if(!strcmp(cmds.at(0),"test"))
+    {
+      cmds.erase(cmds.begin());
+    }
+  else
+    {
+      cmds.erase(cmds.begin());
+      cmds.erase(cmds.end()-1);
+    }
+
+  //struct stat is needed for stat()
+  struct stat fileStat; //= malloc(sizeof(struct stat));
+  int fstatus = stat(cmds.back(),&fileStat);
+
+
+  //cout << "File exisits: " << fstatus << endl;
+  //cout << "STMODE:" << fileStat.st_mode << endl;
+  //cout <<"DIRFILE TEST:" << (fileStat.st_mode & S_IFDIR)   << endl;
+  //cout <<"REGFILE TEST:" << (fileStat.st_mode & S_IFREG)   << endl;
+  //-e checks if the file/directory exists
+  //-f checks if the file/directory exists and is a regular file
+  //-d checks if the file/directory exists and is a directory
+  //cout <<"S_IFREG:"<< S_IFREG << endl;
+  //cout <<"S_IFDIR:"<< S_IFDIR << endl;
+  
+  //check file
+  if(!strcmp(cmds.at(0),"-f"))
+    {
+      int res = fileStat.st_mode & S_IFREG;
+      //  cout <<"Result:"<< (bool)res << endl;
+      return res;
+    }
+  //check if dir
+  else if(!strcmp(cmds.at(0),"-d"))
+    {
+      int res = fileStat.st_mode & S_IFDIR;
+      //cout <<"Result:" << (bool)res << endl;
+      return res;
+    }
+  //check existance test "-e"
+  //fstatus+1 because stat returns 0 if it does exist
+  return (fstatus+1);
+
+  //S_IFREG
+  //S_IFDIR
+  
+
+}
 
 // Will return false if no erros and true if there are errors
 bool Command::evaluate()
@@ -43,11 +97,18 @@ bool Command::evaluate()
 	  exitf();
 	  //return true;
   }
+  
   if(!strcmp(cmd.at(0),"cd")) 
   {
 	  int condition = chdir(cmd.at(1));
 	  return !condition;
   }
+  //check test
+  if(!strcmp(cmd.at(0),"[")||!strcmp(cmd.at(0),"test"))
+    {
+      //inverted since false if no errors but testf returns true if true
+      return !testf(cmd);
+    }
 
 
 

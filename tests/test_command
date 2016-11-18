@@ -1,0 +1,22 @@
+mkdir -p testDir
+test test_command && echo exists # exists
+test t_command || echo doesnt_exist #doesnt exist
+test testDir && echo exists
+test -e test_command && echo exists # 
+test -e t_command || echo doesnt_exist
+test -e testDIr && echo exists
+test -f test_command && echo exists
+test -f t_command || echo doesnt_exist
+test -d testDir && echo exists
+test -d tDir || echo doesnt_exist
+[ test_command ] && echo exists 
+[ test_commad ] || echo doest_exist
+[ -e test_command] && echo exists
+[ -e testcommand ] || echo doesnt_exist
+[ -f test_command ] && echo exists
+[ -f test ] || echo doesnt_exist
+[ -d testDir ] && echo exists
+[ -d test_command ] || echo doest_exist
+exit
+#rm -pd testDir
+
