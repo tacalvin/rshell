@@ -1,9 +1,9 @@
-echo a || echo b && echo c
-echo d || (echo e && echo f)
+echo a || echo b && echo c #normal case
+echo d || (echo e && echo f) #grouped case
 (echo g && echo h) || echo i
 echo j ; (echo k && echo l)
 echo l && (echo m && echo n)
 (echo o && echo p) ; echo q
-echo a && ((echo b && echo c) || echo d)
+echo a && ((echo b && echo c) || echo d) #nested grouping
 echo e && (echo f || (echo g && echo h))
 (echo i && echo j) && (echo k || (echo l && echo m))

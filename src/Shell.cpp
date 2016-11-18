@@ -48,10 +48,10 @@ void Shell::run()
 		perror("error getting hostname");
 	cout << uname << "@" << hname  << "$ ";
 	//register signal handler
- signal(SIGINT,signalHandler);
- string line;
- //cout << uname <<"@" << hname <<"$" ;
- while(getline(cin,line))
+	signal(SIGINT,signalHandler);
+	string line;
+	//cout << uname <<"@" << hname <<"$" ;
+	while(getline(cin,line))
 	{
 
 		try 
@@ -64,14 +64,15 @@ void Shell::run()
 			
 			Base* cmd = buildCommand(cmds);
 			cmd->evaluate();
-			uname = getpwuid(getuid())->pw_name;
-			cout << endl;
-    		cout << uname << "@" << hname  << "$ " ;
-      }
-      catch (runtime_error& e)
-      {
-      	cout << e.what() << endl;
-      }
+    	}
+    	catch (runtime_error& e)
+    	{
+    		cout << e.what() << endl;
+    	}
+    	
+    	uname = getpwuid(getuid())->pw_name;
+		//cout << endl;
+    	cout << uname << "@" << hname  << "$ " ;
 	}
 
 }
@@ -234,6 +235,7 @@ stack<string> Shell::parse(string line)
 			else if (currChar == ')')
 			{
 				if (!operatorValid) throw runtime_error("syntax error near unexpected token ')'");
+				if (commandStack.top() == "(") throw runtime_error("syntax error near unexpected token '('");
 				cleanPush(commandStack, command);
 				command = ")";
 				cleanPush(commandStack, command);
