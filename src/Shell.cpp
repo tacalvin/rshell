@@ -220,7 +220,8 @@ stack<string> Shell::parse(string line)
 		{
 			// add the character as part of the command
 			command.push_back(currChar);
-			operatorValid = true;
+			if (currChar != ' ')
+				operatorValid = true;
 		}
 		else
 		{
@@ -232,10 +233,7 @@ stack<string> Shell::parse(string line)
 				cleanPush(commandStack, command);
 				command = "";
 			}
-      else if (currChar == '#')
-      {
-        break;
-      }
+     
 			else if (currChar == ')')
 			{
 				if (!operatorValid) throw runtime_error("syntax error near unexpected token ')'");
