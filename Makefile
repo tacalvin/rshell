@@ -1,6 +1,6 @@
 
 CC = g++
-CCFLAGS = -Werror -ansi -Wall -pedantic  -std=c++11
+CCFLAGS = -Werror -ansi -Wall -pedantic
 debug: CCFLAGS += -ggdb
 debug: all
 all:main Shell Command And Operator Semi Or
