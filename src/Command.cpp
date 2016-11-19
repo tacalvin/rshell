@@ -63,22 +63,37 @@ bool testf(vector<char *> cmds)
   //cout <<"S_IFDIR:"<< S_IFDIR << endl;
   
   //check file
+  if(fstatus == -1)
+    {
+      cout <<"(False)" << endl;
+      return false;
+    }
   if(!strcmp(cmds.at(0),"-f"))
     {
-      int res = fileStat.st_mode & S_IFREG;
+      int res = S_ISREG(fileStat.st_mode);
       //  cout <<"Result:"<< (bool)res << endl;
-      return res;
+      if(res)
+        cout << "(True)" <<endl;
+      else
+        cout << "(False)" << endl;
+      //return res;
+      return S_ISREG(fileStat.st_mode);
     }
   //check if dir
   else if(!strcmp(cmds.at(0),"-d"))
     {
-      int res = fileStat.st_mode & S_IFDIR;
+      int res = S_ISDIR(fileStat.st_mode);
       //cout <<"Result:" << (bool)res << endl;
-      return res;
+      if(res)
+        cout << "(True)" <<endl;
+      else
+        cout << "(False)" << endl;
+      return S_ISDIR(fileStat.st_mode);
     }
   //check existance test "-e"
   //fstatus+1 because stat returns 0 if it does exist
-  return (fstatus+1);
+    cout << "(True)" <<endl;
+  return true;
 
   //S_IFREG
   //S_IFDIR
