@@ -26,6 +26,7 @@ Command::~Command()
 int cd(char* args)
 {
 	int condition = chdir(args);
+  cout << "CD condition: " << condition << endl;
 	return condition++;
 }
 
@@ -104,6 +105,7 @@ bool testf(vector<char *> cmds)
 // Will return false if no erros and true if there are errors
 bool Command::evaluate()
 {
+  cout << "Command " << endl;
   if(cmd.size() == 0)
   	return false;
 
@@ -112,11 +114,25 @@ bool Command::evaluate()
 	  exitf();
 	  //return true;
   }
-  
+
   if(!strcmp(cmd.at(0),"cd")) 
   {
+    //size 1 so cd
+    if(cmd.size())
+      {
+        
+        char* home;
+        int condition = chdir(home);
+        return condition++;
+      }
+    //if cd -
+    if(!strcmp(cmd.at(1),"-"))
+      {
+        int condition = chdir("..");
+        return condition++;
+      }
 	  int condition = chdir(cmd.at(1));
-	  return !condition;
+	  return condition++;
   }
   //check test
   if(!strcmp(cmd.at(0),"[")||!strcmp(cmd.at(0),"test"))
