@@ -237,7 +237,7 @@ stack<string> Shell::parse(string line)
 			else if (currChar == ')')
 			{
 				if (!operatorValid) throw runtime_error("syntax error near unexpected token ')'");
-				if (commandStack.top() == "(") throw runtime_error("syntax error near unexpected token '('");
+				if (commandStack.top() == "(" && command.empty()) throw runtime_error("syntax error near unexpected token '('");
 				cleanPush(commandStack, command);
 				command = ")";
 				cleanPush(commandStack, command);
