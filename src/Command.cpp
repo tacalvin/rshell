@@ -2,6 +2,7 @@
 #include "./headers/Command.h"
 #include "./headers/Base.h"
 #include <sys/types.h>
+#include <pwd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -105,7 +106,6 @@ bool testf(vector<char *> cmds)
 // Will return false if no erros and true if there are errors
 bool Command::evaluate()
 {
-  cout << "Command " << endl;
   if(cmd.size() == 0)
   	return false;
 
@@ -121,14 +121,23 @@ bool Command::evaluate()
     if(cmd.size())
       {
         
-        char* home;
+        char home[1024];
+        strcpy(home,"/home/");
+        char* uname = getpwuid(getuid())->pw_name;
+        strcat(home,uname);
         int condition = chdir(home);
         return condition++;
       }
     //if cd -
     if(!strcmp(cmd.at(1),"-"))
       {
-        int condition = chdir("..");
+        //get current dir
+        //get old directory
+        //move to old dir
+        //set old pwd to prev dir
+        //set current pwd to new dir
+        //char* back;
+        int condition = 1;//chdir(back);
         return condition++;
       }
 	  int condition = chdir(cmd.at(1));
