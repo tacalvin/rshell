@@ -1,6 +1,6 @@
-mkdir testfolder1
+mkdir -p testfolder1
 cd testfolder1
-mkdir testfolder2
+mkdir -p testfolder2
 cd testfolder2
 cd ..
 cd ..
