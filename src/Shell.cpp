@@ -46,10 +46,20 @@ void Shell::run()
 
 	if(hname == NULL)
 		perror("error getting hostname");
-	cout << uname << "@" << hname  << "$ ";
 	//register signal handler
 	signal(SIGINT,signalHandler);
 	string line;
+  char* currDir = getenv("PWD");
+  cout << uname << "@" << hname  <<"$ " << currDir << endl;
+
+
+  //setting HOME
+  char home[1024];
+  strcpy(home,"/home/");
+  strcat(home,uname);
+  setenv("HOME",home,1);
+
+
 	//cout << uname <<"@" << hname <<"$" ;
 	while(getline(cin,line))
 	{
@@ -77,8 +87,8 @@ void Shell::run()
     	}
     	
     	uname = getpwuid(getuid())->pw_name;
-		//cout << endl;
-    	cout << uname << "@" << hname  << "$ " ;
+      currDir = getenv("PWD");
+      cout << uname << "@" << hname  << "$ " << currDir << endl;    
 	}
 
 }

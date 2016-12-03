@@ -24,13 +24,6 @@ Command::~Command()
 	cmd.clear();
 }
 
-int cd(char* args)
-{
-	int condition = chdir(args);
-  cout << "CD condition: " << condition << endl;
-	return condition++;
-}
-
 void exitf()
 {
 	_exit(0);
@@ -118,14 +111,21 @@ bool Command::evaluate()
   if(!strcmp(cmd.at(0),"cd")) 
   {
     //size 1 so cd
-    if(cmd.size())
+    char currwd[1024];
+    char* ptr = getcwd(currwd,1024);
+
+    //check status of ptr
+    if(ptr == NULL)
       {
-        
-        char home[1024];
-        strcpy(home,"/home/");
-        char* uname = getpwuid(getuid())->pw_name;
-        strcat(home,uname);
-        int condition = chdir(home);
+        perror("Error getting current working directory");
+        return true;
+      }
+
+    if(cmd.size() == 1)
+      {
+        setenv("OLDPWD",getenv("PWD"),1);   
+        setenv("PWD",getenv("HOME"),1);
+        int condition = chdir(getenv("HOME"));
         return condition++;
       }
     //if cd -
@@ -137,10 +137,33 @@ bool Command::evaluate()
         //set old pwd to prev dir
         //set current pwd to new dir
         //char* back;
-        int condition = 1;//chdir(back);
+        char* oldpwd = getenv("PWD");
+        int condition = chdir(getenv("OLDPWD"));
+        setenv("OLDPWD",oldpwd,1);
+        ptr = getcwd(currwd,1024);
+
+        //check status of ptr
+        if(ptr == NULL)
+          {
+            perror("Error getting current working directory");
+            return true;
+          }
+
+        setenv("PWD",currwd,1);
         return condition++;
       }
+    setenv("OLDPWD",getenv("PWD"),1);
 	  int condition = chdir(cmd.at(1));
+    ptr = getcwd(currwd,1024);
+
+    //check status of ptr
+    if(ptr == NULL)
+      {
+        perror("Error getting current working directory");
+        return true;
+      }
+
+    setenv("PWD",currwd,1);
 	  return condition++;
   }
   //check test
