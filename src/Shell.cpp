@@ -238,7 +238,7 @@ stack<string> Shell::parse(string line)
 			//if the current character is a delimiter candidate
 			if (currChar == '(')
 			{
-				if (!operatorValid && !commandStack.empty()) throw runtime_error("syntax error near unexpected token '('");
+				if (operatorValid && !commandStack.empty()) throw runtime_error("1syntax error near unexpected token '('");
 				command = "(";
 				cleanPush(commandStack, command);
 				command = "";
