@@ -10,3 +10,4 @@ cd .. && cd ..
 (cd testfolder2)
 mkdir testfolder3 && (cd testfolder3 || cd ..)
 cd
+cd -
