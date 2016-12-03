@@ -1,0 +1,12 @@
+mkdir testfolder1
+cd testfolder1
+mkdir testfolder2
+cd testfolder2
+cd ..
+cd ..
+cd testfolder1/testfolder2
+cd .. && cd ..
+(cd testfolder1)
+(cd testfolder2)
+mkdir testfolder3 && (cd testfolder3 || cd ..)
+cd
