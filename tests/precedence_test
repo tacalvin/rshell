@@ -8,6 +8,7 @@ echo l && (echo m && echo n)
 echo a && ((echo b && echo c) || echo d) #nested grouping
 echo e && (echo f || (echo g && echo h))
 (echo i && echo j) && (echo k || (echo l && echo m))
+echo next is incorrect inputs only
 echo a || echo b && #incorrect input, no grouping
 echo d || (echo e && echo f #errors with grouping
 echo d || (echo e && echo f))
